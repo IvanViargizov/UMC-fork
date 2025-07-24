@@ -2,9 +2,12 @@ apply from: "${rootProject.rootDir}/gradle/graphql.gradle"
 
 dependencies {
     implementation project(':domain')
+    implementation project(':dao-postgres')
 
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 }
 
 generateJava {

@@ -4,5 +4,9 @@ dependencies {
     implementation project(':dao-postgres')
 
     implementation 'org.springframework.boot:spring-boot-starter'
-    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    implementation "com.netflix.graphql.dgs:graphql-dgs-spring-graphql-starter:${netflixDgsVersion}"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "com.netflix.graphql.dgs:graphql-dgs-spring-graphql-starter-test:${netflixDgsVersion}"
 }

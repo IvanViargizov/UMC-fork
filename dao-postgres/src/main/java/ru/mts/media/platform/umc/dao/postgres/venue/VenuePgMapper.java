@@ -14,12 +14,14 @@ public interface VenuePgMapper {
     @Mapping(target = "externalId.providerId", source = "provider")
     @Mapping(target = "externalId.externalId", source = "externalId")
     @Mapping(target = "id", source = "referenceId")
+    @Mapping(target = "latestEvents", ignore = true) // Заполняется через DataFetcher
     Venue asModel(VenuePgEntity venuePg);
 
     @Mapping(target = "referenceId", source = "id")
     @Mapping(target = "brand", source = "externalId.brandId")
     @Mapping(target = "provider", source = "externalId.providerId")
     @Mapping(target = "externalId", source = "externalId.externalId")
+    @Mapping(target = "events", ignore = true) // Заполняется через DataFetcher
     VenuePgEntity asEntity(Venue venue);
 
     @Mapping(target = "brand", source = "brandId")

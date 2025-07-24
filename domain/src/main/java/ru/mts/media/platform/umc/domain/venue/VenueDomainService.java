@@ -7,6 +7,8 @@ import ru.mts.media.platform.umc.domain.gql.types.FullExternalId;
 import ru.mts.media.platform.umc.domain.gql.types.SaveVenueInput;
 import ru.mts.media.platform.umc.domain.gql.types.Venue;
 
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -20,7 +22,15 @@ public class VenueDomainService {
         var evt = sot.getVenueById(id)
                 .map(applyPatch(input))
                 .map(VenueSave::new)
-                .orElse(null);
+                .orElseGet(() -> {
+                    Venue newVenue = Venue.newBuilder()
+                            .id(UUID.randomUUID().toString())
+                            .externalId(id)
+                            .name(input.getName())
+                            .latestEvents(List.of())
+                            .build();
+                    return new VenueSave(newVenue);
+                });
 
         eventPublisher.publishEvent(evt);
 

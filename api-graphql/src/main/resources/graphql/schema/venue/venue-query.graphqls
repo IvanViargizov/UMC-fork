@@ -1,3 +1,4 @@
 extend type Query {
     venueByReferenceId(id: String!): Venue
+    venues: [Venue!]!
 }
