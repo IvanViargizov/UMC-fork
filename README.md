@@ -18,11 +18,16 @@
 **Реализованные компоненты:**
 - **Query**: `EventDgsQuery` для получения списка событий
 - **Mutation**: `EventDgsMutation` для создания новых событий
-- **DataFetcher**: Использование `@DgsData` для ленивой загрузки связанных данных:
-    - `EventDataFetcher.venues()` - загружает места проведений событий
-    - `VenueDataFetcher.latestEvents()` - загружает последние события для места проведения
 
-### 3. Функциональное и нагрузочное тестирование
+### 3. Решение проблемы N+1 запросов
+
+**Решение через JOIN FETCH:**
+- `EventPgRepository.findAllWithVenues()` - использует `LEFT JOIN FETCH e.venues` для загрузки событий со всеми местами проведения за один запрос
+- `EventPgRepository.findByIdWithVenues()` - аналогично для одного события
+- `VenuePgRepository.findAllWithEvents()` - использует `LEFT JOIN FETCH v.events` для загрузки мест проведения со всеми событиями
+- `VenuePgRepository.findByReferenceIdWithEvents()` - для одного места проведения
+
+### 4. Функциональное и нагрузочное тестирование
 
 **ApplicationFunctionalTest:**
 - Использует Testcontainers с PostgreSQL для изоляции тестов
@@ -33,14 +38,14 @@
 **ApplicationPerformanceTest:**
 - Измеряет RPS и выявляет узкие места в производительности
 
-### 4. Ограничения реализации Many-to-Many
+### 5. Ограничения реализации Many-to-Many
 
 Хотя связь Event-Venue реализована как Many-to-Many на уровне БД и JPA, в GraphQL API не добавлена возможность создавать Venue с привязкой к существующим Event. Согласно ТЗ требовалось только:
 - Создание Event с указанием venue-referenceId
 - Получение списка событий с площадками
 - Получение мест проведения с последними событиями
 
-### 5. Добавленные зависимости
+### 6. Добавленные зависимости
 
 - `spring-boot-starter-data-jpa` - для работы с JPA сущностями в GraphQL слое, необходимо для использования EventPgRepository напрямую в EventDgsQuery и EventDgsMutation
 - `graphql-dgs-spring-graphql-starter` - основной DGS фреймворк для создания GraphQL API (@DgsComponent, @DgsQuery, @DgsMutation аннотации)
@@ -49,7 +54,7 @@
 - `org.testcontainers:junit-jupiter` - интеграция Testcontainers с JUnit 5 для @Testcontainers и @Container аннотаций в тестах
 - `org.testcontainers:postgresql` - PostgreSQL контейнер для изоляции функциональных и нагрузочных тестов от внешней БД
 
-### 6. Предложения по улучшению
+### 7. Предложения по улучшению
 
 - Добавить валидацию бизнес-правил (например, startTime < endTime и пр.)
 - Добавить обработку случая, когда venue не найден по referenceId
@@ -57,8 +62,7 @@
 
 **Дальнейшие улучшения по моему представленному решению:**
 - Создать `EventDomainService` и `EventSot` по аналогии с Venue
-- Добавить `@BatchMapping` для решения проблемы N+1 запросов
-- Хардкод LIMIT 10 в запросе последних событий - нужно сделать конфигурируемым
+- Хардкод значения 10 в запросе последних событий - нужно сделать конфигурируемым
 - Отсутствие кеширования
 - Отсутствие пагинации
 

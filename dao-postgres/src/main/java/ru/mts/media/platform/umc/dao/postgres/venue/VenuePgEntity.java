@@ -8,6 +8,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import ru.mts.media.platform.umc.dao.postgres.common.FullExternalIdPk;
 import ru.mts.media.platform.umc.dao.postgres.event.EventPgEntity;
 
@@ -16,6 +17,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@EqualsAndHashCode(exclude = "events")
 @IdClass(FullExternalIdPk.class)
 @Table(name = "venue",
         indexes = {

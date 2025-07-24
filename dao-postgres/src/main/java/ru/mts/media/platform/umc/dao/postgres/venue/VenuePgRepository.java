@@ -15,8 +15,14 @@ public interface VenuePgRepository extends JpaRepository<VenuePgEntity, FullExte
 
     @Query("""
         SELECT DISTINCT v FROM VenuePgEntity v
-        JOIN v.events e
-        WHERE e.id = :eventId
+        LEFT JOIN FETCH v.events e
         """)
-    List<VenuePgEntity> findVenuesByEventId(@Param("eventId") Long eventId);
+    List<VenuePgEntity> findAllWithEvents();
+
+    @Query("""
+        SELECT v FROM VenuePgEntity v
+        LEFT JOIN FETCH v.events e
+        WHERE v.referenceId = :referenceId
+        """)
+    VenuePgEntity findByReferenceIdWithEvents(@Param("referenceId") String referenceId);
 }

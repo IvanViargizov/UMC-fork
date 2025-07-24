@@ -12,6 +12,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import ru.mts.media.platform.umc.dao.postgres.venue.VenuePgEntity;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@EqualsAndHashCode(exclude = "venues")
 @Table(name = "event")
 public class EventPgEntity {
 

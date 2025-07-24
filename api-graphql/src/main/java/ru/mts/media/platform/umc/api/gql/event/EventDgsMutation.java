@@ -14,6 +14,7 @@ import ru.mts.media.platform.umc.domain.gql.types.Event;
 import ru.mts.media.platform.umc.domain.venue.VenueSot;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @DgsComponent
 @RequiredArgsConstructor
@@ -41,6 +42,16 @@ public class EventDgsMutation {
         }
 
         EventPgEntity savedEvent = eventRepository.save(event);
-        return eventPgMapper.asModel(savedEvent);
+        
+        // Загружаем сохраненное событие с venues через JOIN FETCH
+        EventPgEntity eventWithVenues = eventRepository.findByIdWithVenues(savedEvent.getId())
+                .orElse(savedEvent);
+
+        Event result = eventPgMapper.asModel(eventWithVenues);
+        result.setVenues(eventWithVenues.getVenues().stream()
+                .map(venuePgMapper::asModel)
+                .collect(Collectors.toList()));
+        
+        return result;
     }
 }

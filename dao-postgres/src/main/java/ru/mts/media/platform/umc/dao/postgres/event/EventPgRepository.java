@@ -6,19 +6,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EventPgRepository extends JpaRepository<EventPgEntity, Long> {
 
-    @Query(value = """
-            SELECT DISTINCT e.* FROM event e
-            JOIN venue_event ve ON e.id = ve.event_id
-            JOIN venue v ON ve.venue_brand = v.brand 
-                         AND ve.venue_provider = v.provider 
-                         AND ve.venue_external_id = v.external_id
-            WHERE v.reference_id = :venueReferenceId
-            ORDER BY e.start_time DESC
-            LIMIT 10
-            """, nativeQuery = true)
-    List<EventPgEntity> findLatestEventsByVenueReferenceId(@Param("venueReferenceId") String venueReferenceId);
+    @Query("SELECT DISTINCT e FROM EventPgEntity e LEFT JOIN FETCH e.venues")
+    List<EventPgEntity> findAllWithVenues();
+
+    @Query("SELECT e FROM EventPgEntity e LEFT JOIN FETCH e.venues WHERE e.id = :id")
+    Optional<EventPgEntity> findByIdWithVenues(@Param("id") Long id);
 }
